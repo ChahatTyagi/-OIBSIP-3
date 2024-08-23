@@ -1,0 +1,173 @@
+import java.util.Scanner;  
+public class OnlineReservationSystem 
+{  
+    private static String[] usernames = {"user1", "user2"}; 
+    private static String[] passwords = {"pass1", "pass2"}; 
+    private static Reservation[] reservations = new Reservation[100];
+    private static int reservationCount = 0;  
+    private static int pnrCounter = 1000;  
+    public static void main(String[] args) 
+    {  
+        Scanner scanner = new Scanner(System.in);  
+        while (true) 
+        {  
+            System.out.println("Welcome to the Online Reservation System");  
+            System.out.println("1. Login");  
+            System.out.println("2. Exit");  
+            System.out.print("Choose an option: ");  
+            int choice = scanner.nextInt();  
+            scanner.nextLine(); 
+            if (choice == 1) 
+            {  
+                if (login(scanner)) 
+                {  
+                    postLoginMenu(scanner);  
+                }  
+            } 
+            else 
+            {  
+                System.out.println("Exiting!");  
+                break;  
+            }  
+        }  
+        scanner.close();  
+    }  
+    private static boolean login(Scanner scanner) 
+    {  
+        System.out.print("Enter username: ");  
+        String username = scanner.nextLine();  
+        System.out.print("Enter password: ");  
+        String password = scanner.nextLine();
+        for (int i = 0; i < usernames.length; i++) 
+        {  
+            if (usernames[i].equals(username) && passwords[i].equals(password)) 
+            {  
+                System.out.println("Login successful!");  
+                return true;  
+            }  
+        }  
+        System.out.println("Invalid username or password.");  
+        return false;  
+    }  
+    private static void postLoginMenu(Scanner scanner) 
+    {  
+        while (true) 
+        {  
+            System.out.println("1. Make a Reservation");  
+            System.out.println("2. Cancel a Reservation");  
+            System.out.println("3. Logout");  
+            System.out.print("Select an option: ");  
+            int choice = scanner.nextInt();  
+            scanner.nextLine();  
+            switch (choice) 
+            {  
+                case 1:  
+                    makeReservation(scanner);  
+                    break;  
+                case 2:  
+                    cancelReservation(scanner);  
+                    break;  
+                case 3:  
+                    System.out.println("Logging out...");  
+                    return;  
+                default:  
+                    System.out.println("Invalid option. Please try again.");  
+            }  
+        }  
+    }  
+    private static void makeReservation(Scanner scanner) 
+    {  
+        if (reservationCount >= reservations.length) 
+        {  
+            System.out.println("Reservation limit reached. Cannot make more reservations.");  
+            return;  
+        }  
+        System.out.print("Enter your name: ");  
+        String name = scanner.nextLine();  
+        System.out.print("Enter train number: ");  
+        String trainNumber = scanner.nextLine();  
+        System.out.print("Enter train name: ");  
+        String trainName = scanner.nextLine(); 
+        System.out.print("Enter class type (Sleeper/AC): ");  
+        String classType = scanner.nextLine();  
+        System.out.print("Enter date of journey (YYYY-MM-DD): ");  
+        String dateOfJourney = scanner.nextLine();  
+        System.out.print("From place: ");  
+        String fromPlace = scanner.nextLine();  
+        System.out.print("To place: ");  
+        String toPlace = scanner.nextLine();  
+        String pnr = String.valueOf(pnrCounter++);  
+        reservations[reservationCount++] = new Reservation(name, trainNumber, trainName, classType, dateOfJourney, fromPlace, toPlace, pnr);  
+        System.out.println("Reservation successful! Your PNR number is: " + pnr);  
+    }  
+    private static void cancelReservation(Scanner scanner) 
+    {  
+        System.out.print("Enter your PNR number: ");  
+        String pnr = scanner.nextLine();  
+        int index = findReservationIndexByPNR(pnr);  
+        if (index != -1) 
+        {  
+            Reservation reservation = reservations[index];  
+            System.out.println("Reservation Details:");  
+            System.out.println(reservation);  
+            System.out.print("Do you want to confirm cancellation? (yes/no): ");  
+            String confirm = scanner.nextLine();  
+            if (confirm.equalsIgnoreCase("yes")) 
+            {  
+                for (int i = index; i < reservationCount - 1; i++) 
+                {  
+                    reservations[i] = reservations[i + 1];  
+                }  
+                reservations[--reservationCount] = null; 
+                System.out.println("Reservation cancelled successfully.");  
+            } 
+            else 
+            {  
+                System.out.println("Cancellation aborted.");  
+            }  
+        } 
+        else 
+        {  
+            System.out.println("Invalid PNR number.");  
+        }  
+    } 
+    private static int findReservationIndexByPNR(String pnr) 
+    {  
+        for (int i = 0; i < reservationCount; i++) 
+        {  
+            if (reservations[i] != null && reservations[i].pnr.equals(pnr)) 
+            {  
+                return i;  
+            }  
+        }  
+        return -1; 
+    }  
+    static class Reservation 
+    {  
+        String name;  
+        String trainNumber;  
+        String trainName;  
+        String classType;  
+        String dateOfJourney;  
+        String fromPlace;  
+        String toPlace;  
+        String pnr;  
+        public Reservation(String name, String trainNumber, String trainName, String classType, String dateOfJourney, String fromPlace, String toPlace, String pnr) {  
+            this.name = name;  
+            this.trainNumber = trainNumber;  
+            this.trainName = trainName;  
+            this.classType = classType;  
+            this.dateOfJourney = dateOfJourney;  
+            this.fromPlace = fromPlace;  
+            this.toPlace = toPlace;  
+            this.pnr = pnr;  
+        }  
+        @Override  
+        public String toString() 
+        {  
+            return "Name: " + name + "\nTrain Number: " + trainNumber + "\nTrain Name: " + trainName +  
+                    "\nClass Type: " + classType + "\nDate of Journey: " + dateOfJourney +  
+                    "\nFrom: " + fromPlace + "\nTo: " + toPlace + "\nPNR: " + pnr;  
+        }  
+    }  
+}
